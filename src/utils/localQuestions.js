@@ -621,8 +621,12 @@ function termeAusmultiplizieren(difficulty) {
 function termeAusklammern(difficulty) {
   const ranges = { leicht: [2, 4], mittel: [2, 6], schwer: [3, 10] };
   const a = randInt(...ranges[difficulty]);
-  const b = randInt(1, ranges[difficulty][1]);
-  const c = randInt(1, ranges[difficulty][1]);
+  let b, c;
+  // Ensure b and c are coprime so a is actually the GCD
+  do {
+    b = randInt(1, ranges[difficulty][1]);
+    c = randInt(1, ranges[difficulty][1]);
+  } while (gcd(b, c) > 1 || b === c);
   const ab = a * b;
   const ac = a * c;
 
