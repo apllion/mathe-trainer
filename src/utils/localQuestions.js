@@ -33,11 +33,11 @@ function pick(arr) {
   return arr[randInt(0, arr.length - 1)];
 }
 
-// Difficulty ranges
+// Difficulty ranges — leicht/mittel are close, schwer is a big step up
 const DIFF = {
-  leicht: { fracDen: [2, 6], fracNum: 'small', potBase: [2, 5], potExp: [2, 2] },
-  mittel: { fracDen: [2, 12], fracNum: 'medium', potBase: [2, 8], potExp: [2, 3] },
-  schwer: { fracDen: [3, 20], fracNum: 'large', potBase: [2, 12], potExp: [2, 4] },
+  leicht: { fracDen: [2, 6], potBase: [2, 5], potExp: [2, 2] },
+  mittel: { fracDen: [2, 10], potBase: [2, 8], potExp: [2, 3] },
+  schwer: { fracDen: [5, 25], potBase: [2, 15], potExp: [2, 5] },
 };
 
 function randFrac(difficulty) {
@@ -110,6 +110,36 @@ function bruchGemischt(difficulty) {
     hint: 'Punkt vor Strich: zuerst die Multiplikation',
     explanation: `Erst $${frac(n2, d2)} \\cdot ${frac(n3, d3)} = ${frac(multNum, multDen)}$, dann $${frac(n1, d1)} + ${frac(multNum, multDen)} = ${frac(resultNum, lcd)}$`,
     topic: 'Gemischte Operationen',
+  };
+}
+
+// schwer: Bruch mit Variablen — kuerze a*x / b*x
+function bruchVariable() {
+  const x = randInt(2, 12);
+  const a = randInt(2, 8);
+  const b = randInt(2, 8);
+  const [sn, sd] = simplifyFraction(a, b);
+  return {
+    question: `Kuerze: $\\frac{${a}x}{${b}x}$`,
+    answer: fractionToString(a, b),
+    hint: '$x$ kuerzt sich raus',
+    explanation: `$\\frac{${a}x}{${b}x} = \\frac{${a}}{${b}} = ${frac(a, b)}$`,
+    topic: 'Kuerzen mit Variablen',
+  };
+}
+
+// schwer: Bruch-Addition mit Variablen
+function bruchVariableAddSub() {
+  const op = pick(['+', '-']);
+  const a = randInt(1, 6);
+  const b = randInt(1, 6);
+  const result = op === '+' ? a + b : a - b;
+  return {
+    question: `Vereinfache: $\\frac{${a}}{x} ${op} \\frac{${b}}{x}$`,
+    answer: `${result}/x`,
+    hint: 'Gleicher Nenner — Zaehler direkt verrechnen',
+    explanation: `$\\frac{${a}}{x} ${op} \\frac{${b}}{x} = \\frac{${a} ${op} ${b}}{x} = \\frac{${result}}{x}$`,
+    topic: 'Brueche mit Variablen',
   };
 }
 
@@ -189,10 +219,62 @@ function potenzWurzel(difficulty) {
   };
 }
 
+// schwer: Potenzgesetze mit Variablen
+function potenzVariableMul() {
+  const e1 = randInt(2, 6);
+  const e2 = randInt(2, 6);
+  return {
+    question: `Vereinfache: $x^{${e1}} \\cdot x^{${e2}}$`,
+    answer: `x^${e1 + e2}`,
+    hint: 'Gleiche Basis: Exponenten addieren',
+    explanation: `$x^{${e1}} \\cdot x^{${e2}} = x^{${e1}+${e2}} = x^{${e1 + e2}}$`,
+    topic: 'Potenzgesetze mit Variablen',
+  };
+}
+
+function potenzVariableDiv() {
+  const e1 = randInt(4, 10);
+  const e2 = randInt(1, e1 - 1);
+  return {
+    question: `Vereinfache: $\\frac{x^{${e1}}}{x^{${e2}}}$`,
+    answer: `x^${e1 - e2}`,
+    hint: 'Gleiche Basis: Exponenten subtrahieren',
+    explanation: `$\\frac{x^{${e1}}}{x^{${e2}}} = x^{${e1}-${e2}} = x^{${e1 - e2}}$`,
+    topic: 'Potenzgesetze mit Variablen',
+  };
+}
+
+function potenzVariablePow() {
+  const e1 = randInt(2, 5);
+  const e2 = randInt(2, 4);
+  return {
+    question: `Vereinfache: $\\left(x^{${e1}}\\right)^{${e2}}$`,
+    answer: `x^${e1 * e2}`,
+    hint: 'Potenz einer Potenz: Exponenten multiplizieren',
+    explanation: `$\\left(x^{${e1}}\\right)^{${e2}} = x^{${e1} \\cdot ${e2}} = x^{${e1 * e2}}$`,
+    topic: 'Potenzgesetze mit Variablen',
+  };
+}
+
+// schwer: Kombination mit Koeffizienten
+function potenzVariableKoeff() {
+  const a = randInt(2, 6);
+  const b = randInt(2, 6);
+  const e1 = randInt(2, 4);
+  const e2 = randInt(2, 4);
+  return {
+    question: `Vereinfache: $${a}x^{${e1}} \\cdot ${b}x^{${e2}}$`,
+    answer: `${a * b}x^${e1 + e2}`,
+    hint: 'Koeffizienten multiplizieren, Exponenten addieren',
+    explanation: `$${a} \\cdot ${b} = ${a * b}$, $x^{${e1}} \\cdot x^{${e2}} = x^{${e1 + e2}}$, also $${a * b}x^{${e1 + e2}}$`,
+    topic: 'Potenzgesetze mit Variablen',
+  };
+}
+
 // --- Kopfrechnen ---
 
 function kopfAdd(difficulty) {
-  const ranges = { leicht: [1, 20], mittel: [10, 100], schwer: [50, 500] };
+  const ranges = { leicht: [1, 20], mittel: [10, 100], schwer: [100, 999] };
   const [min, max] = ranges[difficulty];
   const a = randInt(min, max);
   const b = randInt(min, max);
@@ -206,7 +288,7 @@ function kopfAdd(difficulty) {
 }
 
 function kopfSub(difficulty) {
-  const ranges = { leicht: [1, 20], mittel: [10, 100], schwer: [50, 500] };
+  const ranges = { leicht: [1, 20], mittel: [10, 100], schwer: [100, 999] };
   const [min, max] = ranges[difficulty];
   let a = randInt(min, max);
   let b = randInt(min, max);
@@ -221,7 +303,7 @@ function kopfSub(difficulty) {
 }
 
 function kopfMul(difficulty) {
-  const ranges = { leicht: [[2, 10], [2, 10]], mittel: [[2, 12], [2, 20]], schwer: [[5, 25], [5, 25]] };
+  const ranges = { leicht: [[2, 10], [2, 10]], mittel: [[2, 12], [2, 20]], schwer: [[10, 50], [10, 50]] };
   const [r1, r2] = ranges[difficulty];
   const a = randInt(...r1);
   const b = randInt(...r2);
@@ -235,7 +317,7 @@ function kopfMul(difficulty) {
 }
 
 function kopfDiv(difficulty) {
-  const ranges = { leicht: [[2, 10], [2, 10]], mittel: [[2, 12], [2, 15]], schwer: [[5, 20], [5, 20]] };
+  const ranges = { leicht: [[2, 10], [2, 10]], mittel: [[2, 12], [2, 15]], schwer: [[5, 25], [10, 40]] };
   const [r1, r2] = ranges[difficulty];
   const b = randInt(...r1);
   const result = randInt(...r2);
@@ -249,10 +331,48 @@ function kopfDiv(difficulty) {
   };
 }
 
+// schwer: Kopfrechnen mit Variablen — einfache Gleichungen
+function kopfGleichung() {
+  const op = pick(['+', '-', '*']);
+  const x = randInt(2, 20);
+
+  if (op === '+') {
+    const b = randInt(1, 30);
+    const result = x + b;
+    return {
+      question: `Loese: $x + ${b} = ${result}$`,
+      answer: `${x}`,
+      hint: `$x = ${result} - ${b}$`,
+      explanation: `$x = ${result} - ${b} = ${x}$`,
+      topic: 'Gleichungen',
+    };
+  } else if (op === '-') {
+    const b = randInt(1, x - 1);
+    const result = x - b;
+    return {
+      question: `Loese: $x - ${b} = ${result}$`,
+      answer: `${x}`,
+      hint: `$x = ${result} + ${b}$`,
+      explanation: `$x = ${result} + ${b} = ${x}$`,
+      topic: 'Gleichungen',
+    };
+  } else {
+    const b = randInt(2, 12);
+    const result = x * b;
+    return {
+      question: `Loese: $${b}x = ${result}$`,
+      answer: `${x}`,
+      hint: `$x = \\frac{${result}}{${b}}$`,
+      explanation: `$x = \\frac{${result}}{${b}} = ${x}$`,
+      topic: 'Gleichungen',
+    };
+  }
+}
+
 // --- Quadratzahlen ---
 
 function quadratBerechne(difficulty) {
-  const ranges = { leicht: [2, 12], mittel: [5, 20], schwer: [10, 30] };
+  const ranges = { leicht: [2, 12], mittel: [5, 20], schwer: [15, 40] };
   const n = randInt(...ranges[difficulty]);
   return {
     question: `Berechne: $${n}^2$`,
@@ -264,7 +384,7 @@ function quadratBerechne(difficulty) {
 }
 
 function quadratWurzel(difficulty) {
-  const ranges = { leicht: [2, 12], mittel: [5, 20], schwer: [10, 30] };
+  const ranges = { leicht: [2, 12], mittel: [5, 20], schwer: [15, 40] };
   const n = randInt(...ranges[difficulty]);
   const sq = n * n;
   return {
@@ -277,7 +397,7 @@ function quadratWurzel(difficulty) {
 }
 
 function quadratErkennen(difficulty) {
-  const ranges = { leicht: [2, 12], mittel: [5, 20], schwer: [10, 30] };
+  const ranges = { leicht: [2, 12], mittel: [5, 20], schwer: [15, 40] };
   const n = randInt(...ranges[difficulty]);
   const sq = n * n;
   const isQuadrat = pick([true, false]);
@@ -305,19 +425,54 @@ function quadratErkennen(difficulty) {
   }
 }
 
+// schwer: (a+b)² oder (a-b)² als Quadratzahl-Trick
+function quadratVariable() {
+  const type = pick(['sum', 'diff']);
+  const a = randInt(2, 10);
+  const b = randInt(1, 5);
+  if (type === 'sum') {
+    const result = (a + b) * (a + b);
+    return {
+      question: `Berechne: $(${a} + ${b})^2$`,
+      answer: `${result}`,
+      hint: `$(${a}+${b}) = ${a + b}$, dann quadrieren`,
+      explanation: `$(${a}+${b})^2 = ${a + b}^2 = ${result}$`,
+      topic: 'Quadratzahlen',
+    };
+  } else {
+    const result = (a - b) * (a - b);
+    return {
+      question: `Berechne: $(${a} - ${b})^2$`,
+      answer: `${result}`,
+      hint: `$(${a}-${b}) = ${a - b}$, dann quadrieren`,
+      explanation: `$(${a}-${b})^2 = ${a - b}^2 = ${result}$`,
+      topic: 'Quadratzahlen',
+    };
+  }
+}
+
 // --- Binomische Formeln ---
 
 function binom1(difficulty) {
   // (a + b)² = a² + 2ab + b²
-  const ranges = { leicht: [1, 5], mittel: [2, 10], schwer: [3, 15] };
+  const ranges = { leicht: [1, 5], mittel: [2, 8], schwer: [3, 15] };
   const a = randInt(...ranges[difficulty]);
   const b = randInt(1, ranges[difficulty][1]);
   const a2 = a * a;
   const b2 = b * b;
   const ab2 = 2 * a * b;
 
+  if (difficulty === 'schwer') {
+    return {
+      question: `Multipliziere aus: $(${a}x + ${b})^2$`,
+      answer: `${a2}x^2 + ${ab2}x + ${b2}`,
+      hint: '1. Binomische Formel: $(a+b)^2 = a^2 + 2ab + b^2$',
+      explanation: `$(${a}x+${b})^2 = (${a}x)^2 + 2 \\cdot ${a}x \\cdot ${b} + ${b}^2 = ${a2}x^2 + ${ab2}x + ${b2}$`,
+      topic: '1. Binomische Formel',
+    };
+  }
+
   if (pick([true, false])) {
-    // Ausmultiplizieren
     return {
       question: `Berechne: $(${a} + ${b})^2$`,
       answer: `${a2 + ab2 + b2}`,
@@ -326,7 +481,6 @@ function binom1(difficulty) {
       topic: '1. Binomische Formel',
     };
   } else {
-    // Mit Variablen
     return {
       question: `Multipliziere aus: $(x + ${b})^2$`,
       answer: `x^2 + ${2 * b}x + ${b2}`,
@@ -339,12 +493,22 @@ function binom1(difficulty) {
 
 function binom2(difficulty) {
   // (a - b)² = a² - 2ab + b²
-  const ranges = { leicht: [1, 5], mittel: [2, 10], schwer: [3, 15] };
+  const ranges = { leicht: [1, 5], mittel: [2, 8], schwer: [3, 15] };
   const a = randInt(...ranges[difficulty]);
   const b = randInt(1, Math.min(a, ranges[difficulty][1]));
   const a2 = a * a;
   const b2 = b * b;
   const ab2 = 2 * a * b;
+
+  if (difficulty === 'schwer') {
+    return {
+      question: `Multipliziere aus: $(${a}x - ${b})^2$`,
+      answer: `${a2}x^2 - ${ab2}x + ${b2}`,
+      hint: '2. Binomische Formel: $(a-b)^2 = a^2 - 2ab + b^2$',
+      explanation: `$(${a}x-${b})^2 = (${a}x)^2 - 2 \\cdot ${a}x \\cdot ${b} + ${b}^2 = ${a2}x^2 - ${ab2}x + ${b2}$`,
+      topic: '2. Binomische Formel',
+    };
+  }
 
   if (pick([true, false])) {
     return {
@@ -367,11 +531,21 @@ function binom2(difficulty) {
 
 function binom3(difficulty) {
   // (a + b)(a - b) = a² - b²
-  const ranges = { leicht: [1, 5], mittel: [2, 10], schwer: [3, 15] };
+  const ranges = { leicht: [1, 5], mittel: [2, 8], schwer: [3, 15] };
   const a = randInt(...ranges[difficulty]);
   const b = randInt(1, ranges[difficulty][1]);
   const a2 = a * a;
   const b2 = b * b;
+
+  if (difficulty === 'schwer') {
+    return {
+      question: `Multipliziere aus: $(${a}x + ${b})(${a}x - ${b})$`,
+      answer: `${a2}x^2 - ${b2}`,
+      hint: '3. Binomische Formel: $(a+b)(a-b) = a^2 - b^2$',
+      explanation: `$(${a}x+${b})(${a}x-${b}) = (${a}x)^2 - ${b}^2 = ${a2}x^2 - ${b2}$`,
+      topic: '3. Binomische Formel',
+    };
+  }
 
   if (pick([true, false])) {
     return {
@@ -404,13 +578,15 @@ const BRUCH_TYPES = {
     [bruchAddSub, 2],
     [bruchMul, 3],
     [bruchDiv, 3],
-    [bruchGemischt, 1],
+    [bruchGemischt, 2],
   ],
   schwer: [
     [bruchAddSub, 1],
-    [bruchMul, 2],
-    [bruchDiv, 2],
-    [bruchGemischt, 4],
+    [bruchMul, 1],
+    [bruchDiv, 1],
+    [bruchGemischt, 3],
+    [bruchVariable, 2],
+    [bruchVariableAddSub, 2],
   ],
 };
 
@@ -429,10 +605,13 @@ const POTENZ_TYPES = {
   ],
   schwer: [
     [potenzBerechne, 1],
-    [potenzWurzel, 1],
-    [potenzGesetzMul, 2],
-    [potenzGesetzDiv, 3],
-    [potenzGesetzPow, 3],
+    [potenzGesetzMul, 1],
+    [potenzGesetzDiv, 1],
+    [potenzGesetzPow, 1],
+    [potenzVariableMul, 2],
+    [potenzVariableDiv, 2],
+    [potenzVariablePow, 2],
+    [potenzVariableKoeff, 2],
   ],
 };
 
@@ -460,10 +639,11 @@ const KOPF_TYPES = {
     [kopfDiv, 3],
   ],
   schwer: [
-    [kopfAdd, 2],
-    [kopfSub, 2],
-    [kopfMul, 3],
-    [kopfDiv, 3],
+    [kopfAdd, 1],
+    [kopfSub, 1],
+    [kopfMul, 2],
+    [kopfDiv, 2],
+    [kopfGleichung, 4],
   ],
 };
 
@@ -479,9 +659,10 @@ const QUADRAT_TYPES = {
     [quadratErkennen, 3],
   ],
   schwer: [
-    [quadratBerechne, 3],
-    [quadratWurzel, 3],
-    [quadratErkennen, 3],
+    [quadratBerechne, 2],
+    [quadratWurzel, 2],
+    [quadratErkennen, 2],
+    [quadratVariable, 4],
   ],
 };
 
