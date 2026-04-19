@@ -1,6 +1,7 @@
 export function normalizeAnswer(str) {
   return str
     .trim()
+    .replace(/^[a-z]\s*=\s*/i, '') // strip "x = " prefix
     .replace(/\s+/g, ' ')
     .replace(/\*\*/g, '^')
     .toLowerCase();

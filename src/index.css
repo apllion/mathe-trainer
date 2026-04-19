@@ -212,6 +212,49 @@ button {
   height: auto;
 }
 
+.category-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-toggle {
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.category-toggle.active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+
+.special-modes {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.special-modes .challenge-card {
+  flex: 1;
+}
+
+.challenge-card {
+  border: 2px solid var(--primary) !important;
+  background: linear-gradient(135deg, var(--surface), var(--surface-hover)) !important;
+}
+
+.challenge-badge {
+  background: var(--primary) !important;
+  color: white !important;
+}
+
 .category-select h2 {
   margin-bottom: 20px;
 }

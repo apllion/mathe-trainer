@@ -18,6 +18,26 @@ export function setModePref(mode) {
   localStorage.setItem('math-trainer-mode', mode);
 }
 
+const CATEGORIES_KEY = 'math-trainer-categories';
+
+const ALL_CATEGORIES = ['kopfrechnen', 'quadratzahlen', 'bruchrechnung', 'potenzrechnung', 'terme', 'binomisch'];
+
+export function getEnabledCategories() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(CATEGORIES_KEY));
+    if (stored && Array.isArray(stored)) return stored;
+  } catch {}
+  return ALL_CATEGORIES;
+}
+
+export function setEnabledCategories(cats) {
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
+}
+
+export function getAllCategories() {
+  return ALL_CATEGORIES;
+}
+
 export function getModel() {
   return localStorage.getItem(MODEL_KEY) || 'gemini-2.0-flash';
 }

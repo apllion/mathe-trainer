@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { generateQuestion } from '../utils/gemini';
-import { generateLocalQuestion } from '../utils/localQuestions';
+import { generateLocalQuestion, generateChallengeQuestion, getChallengeLength, generateRandomQuestion } from '../utils/localQuestions';
+import { getEnabledCategories } from '../utils/storage';
 import { checkAnswer, calculateScore } from '../utils/scoring';
 import { saveSessionStats } from '../utils/storage';
 import { useTimer } from '../hooks/useTimer';
@@ -35,7 +36,19 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
     prefetchedRef.current = null;
   }
 
+  const isChallenge = category === 'herausforderung';
+  const isRandom = category === 'zufall';
+  const enabledCats = useRef(getEnabledCategories());
+  const challengeTotal = getChallengeLength(enabledCats.current);
+  const indexRef = useRef(0);
+
   function fetchQuestion() {
+    if (isChallenge) {
+      return Promise.resolve(generateChallengeQuestion(indexRef.current, difficultyRef.current, enabledCats.current));
+    }
+    if (isRandom) {
+      return Promise.resolve(generateRandomQuestion(difficultyRef.current, enabledCats.current));
+    }
     if (mode === 'local') {
       return Promise.resolve(generateLocalQuestion(category, difficultyRef.current));
     }
@@ -75,7 +88,15 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
     setPhase('reviewing');
 
     // Pre-fetch next question while user reviews
-    prefetchedRef.current = fetchQuestion().catch(() => null);
+    if (isChallenge) {
+      if (indexRef.current + 1 < challengeTotal) {
+        indexRef.current += 1;
+        prefetchedRef.current = fetchQuestion().catch(() => null);
+      }
+    } else {
+      indexRef.current += 1;
+      prefetchedRef.current = fetchQuestion().catch(() => null);
+    }
   }
 
   function handleSubmit(e) {
@@ -96,7 +117,15 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
     setPhase('reviewing');
 
     // Pre-fetch next question while user reviews
-    prefetchedRef.current = fetchQuestion().catch(() => null);
+    if (isChallenge) {
+      if (indexRef.current + 1 < challengeTotal) {
+        indexRef.current += 1;
+        prefetchedRef.current = fetchQuestion().catch(() => null);
+      }
+    } else {
+      indexRef.current += 1;
+      prefetchedRef.current = fetchQuestion().catch(() => null);
+    }
   }
 
   function handleFinish() {
@@ -147,19 +176,21 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
         }}>
           &larr; Abbrechen
         </button>
-        <div className="difficulty-btns compact">
-          {['leicht', 'mittel', 'schwer'].map((d) => (
-            <button
-              key={d}
-              className={difficulty === d ? 'active' : ''}
-              onClick={() => handleDifficultyChange(d)}
-            >
-              {d.charAt(0).toUpperCase() + d.slice(1)}
-            </button>
-          ))}
-        </div>
+        {!isChallenge && (
+          <div className="difficulty-btns compact">
+            {['leicht', 'mittel', 'schwer'].map((d) => (
+              <button
+                key={d}
+                className={difficulty === d ? 'active' : ''}
+                onClick={() => handleDifficultyChange(d)}
+              >
+                {d.charAt(0).toUpperCase() + d.slice(1)}
+              </button>
+            ))}
+          </div>
+        )}
         <span className="progress">
-          #{currentIndex + 1}
+          {isChallenge ? `${currentIndex + 1} / ${challengeTotal}` : `#${currentIndex + 1}`}
         </span>
         <span className="timer">{elapsed}s</span>
       </div>
@@ -180,6 +211,9 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
 
       {(phase === 'running' || phase === 'reviewing') && currentQuestion && (
         <div className="question-card">
+          {currentQuestion.challengeCategory && (
+            <span className="topic-badge challenge-badge">{currentQuestion.challengeCategory}</span>
+          )}
           {currentQuestion.topic && (
             <span className="topic-badge">{currentQuestion.topic}</span>
           )}
@@ -190,7 +224,7 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
               <div className="choice-btns">
                 {currentQuestion.choices.map((c) => (
                   <button key={c} className="choice-btn" onClick={() => handleChoiceSelect(c)}>
-                    {c}
+                    <MathText text={c} />
                   </button>
                 ))}
               </div>
@@ -254,19 +288,29 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
               )}
 
               <div className="review-actions">
-                <button
-                  className="next-btn"
-                  onClick={handleNext}
-                  disabled={loadingNext}
-                >
-                  {loadingNext ? 'Lade...' : 'Naechste Aufgabe'}
-                </button>
-                <button
-                  className="finish-btn"
-                  onClick={handleFinish}
-                >
-                  Beenden
-                </button>
+                {isChallenge && currentIndex + 1 >= challengeTotal ? (
+                  <button className="next-btn" onClick={handleFinish}>
+                    Ergebnis anzeigen
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className="next-btn"
+                      onClick={handleNext}
+                      disabled={loadingNext}
+                    >
+                      {loadingNext ? 'Lade...' : 'Naechste Aufgabe'}
+                    </button>
+                    {!isChallenge && (
+                      <button
+                        className="finish-btn"
+                        onClick={handleFinish}
+                      >
+                        Beenden
+                      </button>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )}

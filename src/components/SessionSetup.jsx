@@ -5,7 +5,10 @@ const CATEGORY_LABELS = {
   quadratzahlen: 'Quadratzahlen',
   bruchrechnung: 'Bruchrechnung',
   potenzrechnung: 'Potenzrechnung & Wurzeln',
+  terme: 'Terme & Gleichungen',
   binomisch: 'Binomische Formeln',
+  herausforderung: 'Herausforderung',
+  zufall: 'Zufall',
 };
 
 export default function SessionSetup({ category, onStart, onBack }) {

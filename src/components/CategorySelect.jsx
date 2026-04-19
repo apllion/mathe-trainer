@@ -28,6 +28,13 @@ const CATEGORIES = [
     icon: 'x\u00B2',
   },
   {
+    id: 'terme',
+    name: 'Terme & Gleichungen',
+    description:
+      'Ausmultiplizieren, Ausklammern, Terme vereinfachen, Distributivgesetz',
+    icon: '3x',
+  },
+  {
     id: 'binomisch',
     name: 'Binomische Formeln',
     description:
@@ -36,15 +43,39 @@ const CATEGORIES = [
   },
 ];
 
+import { getEnabledCategories } from '../utils/storage';
+
 export default function CategorySelect({ onSelect }) {
+  const enabledCats = getEnabledCategories();
+  const visibleCategories = CATEGORIES.filter((c) => enabledCats.includes(c.id));
   return (
     <div className="category-select">
       <div className="hero-logo">
         <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FIA" />
       </div>
+
+      <div className="special-modes">
+        <button
+          className="category-card challenge-card"
+          onClick={() => onSelect('herausforderung')}
+        >
+          <span className="category-icon">&#9733;</span>
+          <h3>Herausforderung</h3>
+          <p>Eine Aufgabe aus jedem Bereich</p>
+        </button>
+        <button
+          className="category-card challenge-card"
+          onClick={() => onSelect('zufall')}
+        >
+          <span className="category-icon">&#9776;</span>
+          <h3>Zufall</h3>
+          <p>Zufaellige Aufgaben aus allen Bereichen</p>
+        </button>
+      </div>
+
       <h2>Thema waehlen</h2>
       <div className="category-grid">
-        {CATEGORIES.map((cat) => (
+        {visibleCategories.map((cat) => (
           <button
             key={cat.id}
             className="category-card"
