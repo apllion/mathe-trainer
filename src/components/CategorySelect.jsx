@@ -39,6 +39,9 @@ const CATEGORIES = [
 export default function CategorySelect({ onSelect }) {
   return (
     <div className="category-select">
+      <div className="hero-logo">
+        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="FIA" />
+      </div>
       <h2>Thema waehlen</h2>
       <div className="category-grid">
         {CATEGORIES.map((cat) => (

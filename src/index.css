@@ -49,6 +49,14 @@ body {
   background: linear-gradient(135deg, var(--primary), var(--primary-hover));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo {
+  height: 96px;
+  width: auto;
 }
 
 .app-header nav {
@@ -157,6 +165,30 @@ button {
   cursor: not-allowed;
 }
 
+.choice-btns {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.choice-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.choice-btn:hover {
+  border-color: var(--primary);
+  background: var(--surface-hover);
+}
+
 .back-btn {
   background: none;
   border: none;
@@ -170,6 +202,16 @@ button {
 }
 
 /* Category Select */
+.hero-logo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.hero-logo img {
+  width: 100%;
+  height: auto;
+}
+
 .category-select h2 {
   margin-bottom: 20px;
 }

@@ -39,7 +39,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>FIA</h1>
+        <h1><img src={`${import.meta.env.BASE_URL}logo.png`} alt="FIA" className="app-logo" /></h1>
         <nav>
           <button
             className={view !== 'stats' && view !== 'settings' ? 'active' : ''}

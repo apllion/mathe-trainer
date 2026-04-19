@@ -284,8 +284,9 @@ function quadratErkennen(difficulty) {
 
   if (isQuadrat) {
     return {
-      question: `Ist $${sq}$ eine Quadratzahl? (ja/nein)`,
+      question: `Ist $${sq}$ eine Quadratzahl?`,
       answer: 'ja',
+      choices: ['Ja', 'Nein'],
       hint: `Versuche die Wurzel zu ziehen`,
       explanation: `$${sq} = ${n}^2$, also ja`,
       topic: 'Quadratzahlen erkennen',
@@ -294,8 +295,9 @@ function quadratErkennen(difficulty) {
     const offset = pick([-1, 1, 2, -2].filter(o => sq + o > 1));
     const notSq = sq + offset;
     return {
-      question: `Ist $${notSq}$ eine Quadratzahl? (ja/nein)`,
+      question: `Ist $${notSq}$ eine Quadratzahl?`,
       answer: 'nein',
+      choices: ['Ja', 'Nein'],
       hint: `Die naechste Quadratzahl ist $${sq}$`,
       explanation: `$${n}^2 = ${sq}$, aber $${notSq} \\neq ${sq}$, also nein`,
       topic: 'Quadratzahlen erkennen',

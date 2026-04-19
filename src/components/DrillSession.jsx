@@ -59,6 +59,25 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
     }
   }
 
+  function handleChoiceSelect(choice) {
+    setUserAnswer(choice);
+    const timeSpent = stop();
+    const isCorrect = checkAnswer(choice, currentQuestion.answer);
+
+    const answer = {
+      question: currentQuestion,
+      userAnswer: choice,
+      isCorrect,
+      timeSpent,
+    };
+
+    setAnswers((prev) => [...prev, answer]);
+    setPhase('reviewing');
+
+    // Pre-fetch next question while user reviews
+    prefetchedRef.current = fetchQuestion().catch(() => null);
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     if (!userAnswer.trim()) return;
@@ -166,7 +185,25 @@ export default function DrillSession({ category, config, mode, onBack, onInvalid
           )}
           <h3 className="question-text"><MathText text={currentQuestion.question} /></h3>
 
-          {phase === 'running' && (
+          {phase === 'running' && currentQuestion.choices && (
+            <div className="choices">
+              <div className="choice-btns">
+                {currentQuestion.choices.map((c) => (
+                  <button key={c} className="choice-btn" onClick={() => handleChoiceSelect(c)}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+              {currentQuestion.hint && (
+                <details className="hint">
+                  <summary>Hinweis</summary>
+                  <p><MathText text={currentQuestion.hint} /></p>
+                </details>
+              )}
+            </div>
+          )}
+
+          {phase === 'running' && !currentQuestion.choices && (
             <form onSubmit={handleSubmit}>
               <input
                 ref={inputRef}
